@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Eygle Download</title>
+
+    <link rel="stylesheet" href="css/bootstrap.css">
+
+    <link href="css/main.css" rel="stylesheet" type="text/css">
+    <link href="css/headers.css" rel="stylesheet" type="text/css">
+    <link href="css/labels.css" rel="stylesheet" type="text/css">
+    <link href="css/line.css" rel="stylesheet" type="text/css">
+
+    <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+    <script src="js/ui-bootstrap-tpls-0.12.0.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+    <script src="libs/zeroclipboard/ZeroClipboard.min.js"></script>
+    <script src="js/ng-clip.min.js"></script>
+
+    <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/components/core-min.js"></script>
+    <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js"></script>
+
+    <script src="js/libs.js"></script>
+    <script src="js/filesController.js"></script>
+</head>
+<body ng-app="downloadsApp" ng-controller="downloadsController">
+<alert id="alert" ng-show="showAlert" type="{{alert.type}}" close="closeAlert()">{{alert.msg}}</alert>
+
+<div class="top-fixed">
+    <div id="headers">
+        <div id="breadcrumbs">
+            <span ng-if="hiddenBreadcrumbs.length > 0">
+                <div class="icon-breadcrumb" ng-click="toggleShowBreadrumbPopup()">
+                    <div class="breadcrumb-popup" ng-show="showBreadcrumbPopup">
+                        <div ng-repeat="dir in hiddenBreadcrumbs">
+                            <a href="{{dir.path}}" class="crumb">{{dir.name}}</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="breadcrumb_spacer"></div>
+            </span>
+
+            <span ng-repeat="dir in breadcrumbs">
+                <a href="{{dir.path}}" class="crumb" ng-if="dir.prettyName" popover-placement="bottom" popover="{{dir.name}}" popover-trigger="mouseenter" popover-animation="true">{{dir.prettyName}}</a>
+                <a href="{{dir.path}}" class="crumb" ng-if="!dir.prettyName">{{dir.name}}</a>
+                <div class="breadcrumb_spacer"></div>
+            </span>
+            <span class="current-crumb" ng-if="currentFolder.prettyName" popover-placement="bottom" popover="{{currentFolder.name}}" popover-trigger="mouseenter" popover-animation="true">{{currentFolder.prettyName}}</span>
+            <span class="current-crumb" ng-if="!currentFolder.prettyName">{{currentFolder.name}}</span>
+        </div>
+        <div id="manage-selection">
+            <div ng-show="showDlZipIcon" ng-click="downloadSelectedAsTar()" class="manage-icon dl-zip" popover-placement="bottom" popover="Compresser et télécharger" popover-trigger="mouseenter" popover-animation="true"></div>
+            <div ng-show="showDeleteIcon" ng-click="toggleModal()" class="manage-icon delete" popover-placement="bottom" popover="Supprimer" popover-trigger="mouseenter" popover-animation="true"></div>
+            <div class="manage-icon update" ng-click="update()"  popover-placement="bottom" popover="Actualiser" popover-trigger="mouseenter" popover-animation="true"></div>
+            <div class="manage-icon info" ng-click="toggleServerInfoModal()"  popover-placement="bottom" popover="Infos du serveur" popover-trigger="mouseenter" popover-animation="true"></div>
+        </div>
+    </div>
+
+    <div id="labels">
+        <div class="files-label col-name" ng-click="sort('name')">
+            <span>Nom</span>
+
+            <div class="sorted" ng-class="sortReverse ? 'desc' : 'asc'" ng-if="sortRow == 'name'"></div>
+        </div><div class="files-label col-type" ng-click="sort('type')">
+            <span>Type</span>
+
+            <div class="sorted" ng-class="sortReverse ? 'desc' : 'asc'" ng-if="sortRow == 'type'"></div>
+        </div><div class="files-label col-size" ng-click="sort('bytes')">
+            <span>Taille</span>
+
+            <div class="sorted" ng-class="sortReverse ? 'desc' : 'asc'" ng-if="sortRow == 'bytes'"></div>
+        </div><div class="files-label col-modified" ng-click="sort('modified')">
+            <span>Modifié</span>
+
+            <div class="sorted" ng-class="sortReverse ? 'desc' : 'asc'" ng-if="sortRow == 'modified'"></div>
+        </div>
+    </div>
+</div>
+
+<div id="corps">
+    <div ng-repeat="file in files | orderBy : sortRow : sortReverse" id="{{file.id}}" class="line"
+         ng-class="{'line-selected': file.selected}" ng-click="toggleSelectLine(file)">
+        <div class="col-name">
+            <div class="icon col-icon {{getIconForFileType(file.type)}}" clip-copy="copyToClipboard(file)"></div>
+            <!--<div class="icon col-icon {{getIconForFileType(file.type)}}"></div>-->
+            <div class="title">
+                <a ng-if="file.name.length < 51" href="{{formatURL(file)}}">{{file.name}}</a>
+                <a ng-if="file.name.length > 50" href="{{formatURL(file)}}"><acronym title="{{file.name}}">{{formatName(file.name, 50)}}</acronym></a>
+            </div>
+        </div><div class="col-type">{{formatType(file.type)}}</div><div class="col-size">{{file.size}}</div><div class="col-modified">{{formatDate(file.modified)}}</div><div class="col-admin"><a class="download" ng-click="downloadDir(file.id); $event.stopPropagation();" ng-if="file.type == 'folder'">Tar</a></div>
+    </div>
+</div>
+
+<modal title="Authentification pour supression" visible="showModal">
+    <form role="form">
+        <div class="form-group">
+            <label for="password">Mot de passe</label>
+            <input type="password" class="form-control" id="password" placeholder="Mot de passe" />
+        </div>
+        <button type="submit" class="btn btn-default" ng-click="toggleModal();deleteSelected();">Submit</button>
+    </form>
+</modal>
+
+<modal title="Informations du serveur" visible="showServerInfoModal">
+    <table>
+        <tr>
+            <td>Espace total:</td>
+            <td>{{size}}</td>
+        </tr>
+        <tr>
+            <td>Espace utilisé:</td>
+            <td>{{used}}</td>
+        </tr>
+        <tr>
+            <td>Espace restant:</td>
+            <td>{{available}}</td>
+        </tr>
+        <tr>
+            <td>Pourcentage utilisé:</td>
+            <td>{{used_percent}}</td>
+        </tr>
+    </table>
+</modal>
+
+</body>
+</html>

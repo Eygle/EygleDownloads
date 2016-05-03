@@ -1,0 +1,4 @@
+Options +FollowSymlinks
+RewriteEngine On
+
+RewriteRule ^downloads/(.+)[/]{1}$ downloads/index.html?dir=$1/ [L]

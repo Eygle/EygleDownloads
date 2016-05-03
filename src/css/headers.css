@@ -1,0 +1,116 @@
+#headers {
+    position: relative;
+}
+
+#breadcrumbs {
+    display: inline-block;
+    width: 400px;
+    line-height: 32px;
+
+    white-space: nowrap;
+    -webkit-user-select: text;
+    -khtml-user-select: text;
+    -moz-user-select: text;
+    -o-user-select: text;
+    user-select: text;
+
+    font-size: 18px;
+    font-weight: normal;
+    margin-bottom: 20px;
+    vertical-align: middle;
+}
+
+#breadcrumbs a {
+    color: #2895f1;
+    text-decoration: none;
+}
+
+#breadcrumbs a:hover {
+    text-decoration: underline;
+}
+
+.breadcrumb_spacer {
+    background-position: left -9741px;
+    width: 7px;
+    height: 11px;
+    display: inline-block;
+    margin: 0 3px;
+    background-image: url(../imgs/sprite.png);
+    background-repeat: no-repeat;
+    vertical-align: middle;
+}
+
+.icon-breadcrumb {
+    width: 32px;
+    height: 32px;
+    display: inline-block;
+    margin: 0 3px;
+    background-image: url(../imgs/sprite.png);
+    background-repeat: no-repeat;
+    vertical-align: middle;
+    background-position: left -857px;
+}
+
+.breadcrumb-popup {
+    position: absolute;
+    top: 40px;
+    left: 0;
+    z-index: 1060;
+    background-color: #fff;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0, 0, 0, .2);
+    border-radius: 6px;
+    -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
+    padding: 10px;
+}
+
+.crumb {
+    vertical-align: middle;
+}
+
+.current-crumb {
+    vertical-align: middle;
+}
+
+.root-icon {
+    background-image: url(../imgs/sprite.png);
+    background-position: left -10134px;
+    width: 32px;
+    height: 32px;
+}
+
+#manage-selection {
+    position: absolute;
+    top: 10px;
+    right: 25px;
+}
+
+.manage-icon {
+    width: 19px;
+    height: 19px;
+    background-image: url(../imgs/sprite.png);
+    background-repeat: no-repeat;
+    display: inline-block;
+    line-height: 32px;
+    margin: 0 3px;
+    cursor: pointer;
+}
+
+.delete {
+    background-position: left -11090px;
+}
+
+.dl-zip {
+    background-position: left -9891px;
+}
+
+.info {
+    background-position: left -10967px;
+}
+
+.update {
+    background-position: left -11029px;
+}
